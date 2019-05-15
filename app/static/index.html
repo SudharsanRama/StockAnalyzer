@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Stocks analyzer</title>
+
+    <meta name="description" content="Source code generated using layoutit.com">
+    <meta name="author" content="LayoutIt!">
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+  </head>
+  <body>
+
+  <div class="container-fluid">
+	  <div class="row">
+	  	<div class="col-md-12">
+	  		<div class="jumbotron">
+	  			<h2>
+	  				Welcome to stock analyzer!
+	  			</h2>
+	  			<p>
+	  				This is a simple tool for uploading stock data of different companies and arrive at basic conclusions.
+	  			</p>
+	  			<p>
+            <form id="upload-file" method="post" enctype="multipart/form-data">
+              <fieldset>
+                  <label for="file">Select a file</label>
+                  <input name="file" type="file">
+              </fieldset>
+              <fieldset>
+                  <a class="btn btn-primary btn-success" id="uploadButton">Upload</a>
+              </fieldset>
+            </form>
+	  			</p>
+        </div>
+        <div class="row">
+          <div class="col-md-3">
+              <ul class="nav flex-column" id="stockList" style="height: 400px;overflow-y: scroll;">
+            
+              </ul>
+          </div>
+          <div class="col-md-9">
+            <h3>Details here</h3>
+            <div id="descTable">
+              
+            </div>
+          </div>
+        </div>
+	  	</div>
+    </div>
+  </div>
+  <div id="templates" style="visibility:hidden">
+    <li class="nav-item">
+      <a class="nav-link" href="#"></a>
+    </li>
+  </div>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/scripts.js"></script>
+  </body>
+</html>

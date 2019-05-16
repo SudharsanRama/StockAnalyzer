@@ -1,7 +1,7 @@
 from flask import redirect, jsonify, request
 from app import app
 from werkzeug.utils import secure_filename
-import os
+import os, json
 import pandas as pd
 
 ALLOWED_EXTENSIONS = set(['csv'])
@@ -34,6 +34,18 @@ def upload_file():
             return jsonify(DATA_FRAME.get_list())
     return jsonify(None)
 
+@app.route('/details/<name>', methods=['GET'])
+def get_details(name):
+    global DATA_FRAME
+    # return app.response_class(DATA_FRAME.get_description(name))
+    # return DATA_FRAME.get_description(name)
+    response = app.response_class(
+        response=DATA_FRAME.get_description(name),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -47,7 +59,8 @@ class DataFrame:
         return self.df['Name'].unique().tolist()
 
     def get_description(self,company):
-        return
+        stock = self.df.loc[self.df['Name'] == company]
+        return stock.to_json(orient='split')
 
 
    

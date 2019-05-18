@@ -53,14 +53,24 @@ def allowed_file(filename):
 class DataFrame:
     def __init__(self,filePath):
         self.filePath = filePath
-        self.df = pd.read_csv(filePath)
+        self.df = pd.read_csv(filePath, parse_dates=['date'])
 
     def get_list(self):
         return self.df['Name'].unique().tolist()
 
     def get_description(self,company):
-        stock = self.df.loc[self.df['Name'] == company]
-        return stock.to_json(orient='split')
+        stock = self.df.loc[self.df['Name'] == company].set_index('date')
+        g = stock.groupby(pd.Grouper(freq='6M'))
+        starts, opens, highs, lows, close = [],[],[],[],[]
+        for(month_start, sub_stock) in g:
+        	starts.append(month_start.strftime('%d %b %Y %H:%M Z'))
+        	opens.append(sub_stock["open"].iloc[0])
+        	highs.append(sub_stock["high"].max())
+        	lows.append(sub_stock["low"].min())
+        	close.append(sub_stock["close"].iloc[-1])
+
+        stats = [{"start": start, "open": open, "high": high, "low": low, "close": close} for start, open, high, low, close in zip(starts, opens, highs, lows, close)]
+        return json.dumps(stats)
 
 
    

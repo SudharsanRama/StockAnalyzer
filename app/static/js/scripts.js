@@ -2,6 +2,15 @@
 var barCount = 10;
 var initialDateStr = '01 Apr 2017 00:00 Z';
 
+var $loading = $('#cover').hide();
+$(document)
+  .ajaxStart(function () {
+    $loading.show();
+  })
+  .ajaxStop(function () {
+    $loading.fadeOut(500);
+  });
+
 $(function() {
   $('#uploadButton').click(function() {
       var form_data = new FormData($('#upload-file')[0]);
@@ -35,9 +44,9 @@ function displayDetails(company){
         url: '/details/' + company,
         contentType: 'application/json',
         success: function(data) {
-            console.log(data.columns);
-            console.log(data.data);
-            $('#details').show()
+			updateChart(data)
+			$('#details').children("h3").html("Stock "+ company)
+			$('#details').show()
         },
     });
 }
@@ -49,11 +58,38 @@ var chart = new Chart(ctx, {
 	type: 'candlestick',
 	data: {
 		datasets: [{
-			label: 'CHRT - Chart.js Corporation',
+			label: 'Half-yearly Opening, High, Low, Closing over 5 years',
 			data: getRandomData(initialDateStr, barCount)
 		}]
 	}
 });
+
+function updateChart(data){
+	chart.data.datasets.forEach(function(dataset) {
+		dataset.data = parseStockData(data);
+	});
+	chart.update();
+}
+
+function parseStockData(data){
+	chartData = [];
+	data.forEach( d => {
+		chartData.push(
+			getBar(luxon.DateTime.fromRFC2822(d.start),d)
+		);
+	});
+	return chartData;
+}
+
+function getBar(date, data){
+	return {
+		t: date.valueOf(),
+		o: data.open,
+		h: data.high,
+		l: data.low,
+		c: data.close
+	};
+}
 
 var getRandomInt = function(max) {
 	return Math.floor(Math.random() * Math.floor(max));

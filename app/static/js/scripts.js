@@ -44,10 +44,10 @@ function displayDetails(company){
         url: '/details/' + company,
         contentType: 'application/json',
         success: function(data) {
-			updateChart(data)
-			$('#details').children("h3").html("Stock "+ company)
-			$('#details').show()
-        },
+					updateChart(data)
+					$('#details').children("h3").html("Stock "+ company)
+					$('#details').show()
+    		}
     });
 }
 
@@ -58,16 +58,23 @@ var chart = new Chart(ctx, {
 	type: 'candlestick',
 	data: {
 		datasets: [{
-			label: 'Half-yearly Opening, High, Low, Closing over 5 years',
+			label: 'Actual',
+			data: getRandomData(initialDateStr, barCount),
+			color: {
+				up: '#01ff01',
+				down: '#fe0000',
+				unchanged: '#999',
+			}
+		},{
+			label: 'Predicted',
 			data: getRandomData(initialDateStr, barCount)
 		}]
 	}
 });
 
 function updateChart(data){
-	chart.data.datasets.forEach(function(dataset) {
-		dataset.data = parseStockData(data);
-	});
+	chart.data.datasets[0].data = parseStockData(data.actual);
+	chart.data.datasets[1].data = parseStockData(data.predicted);
 	chart.update();
 }
 

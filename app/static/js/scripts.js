@@ -46,6 +46,7 @@ function displayDetails(company){
         success: function(data) {
 					updateChart(data)
 					$('#details').children("h3").html("Stock "+ company)
+					$('#details').children("h5").html("RMSE: "+ data.rmse)
 					$('#details').show()
     		}
     });

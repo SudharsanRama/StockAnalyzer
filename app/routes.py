@@ -1,6 +1,6 @@
 from flask import redirect, jsonify, request
 from app import app
-from app.linear_regression import simple_linear_regression
+from app.linear_regression import simple_linear_regression, rmse_metric
 from werkzeug.utils import secure_filename
 import os, json
 import pandas as pd
@@ -40,7 +40,7 @@ def get_details(name):
     global DATA_FRAME
     data = {}
     data['actual'] = DATA_FRAME.get_description(name)
-    data['predicted'] = DATA_FRAME.get_predicted(name)
+    data['predicted'], data['rmse'] = DATA_FRAME.get_predicted(name)
     response = app.response_class(
         response=json.dumps(data),
         status=200,
@@ -74,20 +74,25 @@ class DataFrame:
 
     def get_description(self,company):
         stock = self.df.loc[self.df['symbol'] == company].set_index('timestamp')
-        g = stock.last('6M').groupby(pd.Grouper(freq='M'))
-        return get_stats(g)
+        groups = stock.last('6M').groupby(pd.Grouper(freq='2W'))
+        return get_stats(groups)
 
     def get_predicted(self,company):
         stock = self.df.loc[self.df['symbol'] == company].set_index('timestamp')
+        actual = stock.last('6M')['close'].tolist()
         dataset, test_set = [], []
-        g = stock.first('18M')
-        for index, row in g.iterrows():
+
+        current_df = stock.first('18M')
+        for index, row in current_df.iterrows():
             dataset.append([(row['high']+row['low'])/2, row['close']])
-        g = stock.last('6M')
-        for index, row in g.iterrows():
+         
+        current_df = stock.last('6M')
+        for index, row in current_df.iterrows():
             test_set.append([(row['high']+row['low'])/2, 0])
-        g['close'] = simple_linear_regression(dataset, test_set)
-        return get_stats(g.groupby(pd.Grouper(freq='M')))
+        
+        current_df['close'] = simple_linear_regression(dataset, test_set)
+        rmse = round(rmse_metric(actual, current_df['close'].tolist()), 3)
+        return get_stats(current_df.groupby(pd.Grouper(freq='2W'))), rmse
 
 
    

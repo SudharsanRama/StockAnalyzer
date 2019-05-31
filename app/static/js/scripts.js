@@ -47,9 +47,28 @@ function displayDetails(company){
 					updateChart(data)
 					$('#details').children("h3").html("Stock "+ company)
 					$('#details').children("h5").html("RMSE: "+ data.rmse)
+					updateTable(data)
 					$('#details').show()
     		}
     });
+}
+
+function updateTable(data){
+	$('#table-contents').empty();
+	for(var i=0;i<data.actual.length;i++){
+		var td1, td2, td3;
+		var tr = document.createElement('TR');
+		td1 = document.createElement('TD');
+		td2 = document.createElement('TD');
+		td3 = document.createElement('TD');
+		td1.appendChild(document.createTextNode(data.actual[i].start));
+		td2.appendChild(document.createTextNode(data.actual[i].close));
+		td3.appendChild(document.createTextNode(data.predicted[i].close));
+		tr.appendChild(td1);
+		tr.appendChild(td2);
+		tr.appendChild(td3);
+		$('#table-contents').append(tr);
+	}
 }
 
 var ctx = document.getElementById('chart').getContext('2d');
